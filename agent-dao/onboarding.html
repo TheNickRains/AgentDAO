@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - Email-Driven DAO Governance Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border: none;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 15px 20px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .step-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .step-icon {
+            font-size: 2rem;
+            color: #4f46e5;
+            margin-bottom: 15px;
+        }
+        .progress-bar {
+            background-color: #4f46e5;
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+            border-color: #4338ca;
+        }
+        .btn-outline-primary {
+            color: #4f46e5;
+            border-color: #4f46e5;
+        }
+        .btn-outline-primary:hover {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+        .feature-icon {
+            font-size: 1.5rem;
+            color: #4f46e5;
+            margin-right: 10px;
+        }
+        .onboarding-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .form-step {
+            display: none;
+        }
+        .form-step.active {
+            display: block;
+        }
+        .chain-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="dashboard.html">
+                Email-Driven DAO Governance Agent
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="onboarding.html">Get Started</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="onboarding-container">
+            <div class="text-center mb-5">
+                <h1 class="fw-bold mb-3">Welcome to Email-Driven DAO Governance</h1>
+                <p class="text-muted">Complete these simple steps to start voting on DAO proposals via email</p>
+                <div class="progress mt-4">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" id="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+            <!-- Step 1: Introduction -->
+            <div class="form-step active" id="step-1">
+                <div class="card">
+                    <div class="card-body text-center p-5">
+                        <div class="step-icon">
+                            <i class="bi bi-envelope-paper"></i>
+                        </div>
+                        <h2 class="mb-3">Vote on DAO Proposals via Email</h2>
+                        <p class="mb-4">Our agent makes governance simple. You'll receive personalized proposal digests and can vote by simply replying to emails. No gas fees, no complex wallet interactions.</p>
+                        
+                        <div class="row mt-5">
+                            <div class="col-md-4">
+                                <div class="feature-icon mb-2">
+                                    <i class="bi bi-envelope-check"></i>
+                                </div>
+                                <h5>Email-Based Voting</h5>
+                                <p class="text-muted small">Vote by replying to emails with simple commands</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-icon mb-2">
+                                    <i class="bi bi-currency-exchange"></i>
+                                </div>
+                                <h5>Gasless Transactions</h5>
+                                <p class="text-muted small">We cover all gas fees for your votes</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-icon mb-2">
+                                    <i class="bi bi-robot"></i>
+                                </div>
+                                <h5>AI-Powered Insights</h5>
+                                <p class="text-muted small">Get personalized proposal recommendations</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-lg mt-4 next-btn" data-next="2">Get Started</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Choose Onboarding Method -->
+            <div class="form-step" id="step-2">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h2 class="mb-4 text-center">Choose Your Onboarding Method</h2>
+                        <p class="text-center mb-5">Select how you'd like to connect to our governance agent</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card step-card h-100" id="web3-option">
+                                    <div class="card-body text-center p-4">
+                                        <div class="step-icon">
+                                            <i class="bi bi-wallet2"></i>
+                                        </div>
+                                        <h4>Web3 User</h4>
+                                        <p class="text-muted">Connect your existing wallet and delegate your governance tokens to our agent</p>
+                                        <button class="btn btn-primary mt-3 connect-wallet-btn">Connect Wallet</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card step-card h-100" id="email-option">
+                                    <div class="card-body text-center p-4">
+                                        <div class="step-icon">
+                                            <i class="bi bi-envelope"></i>
+                                        </div>
+                                        <h4>Email User</h4>
+                                        <p class="text-muted">Register with your email and we'll create a smart wallet for you</p>
+                                        <button class="btn btn-primary mt-3 email-signup-btn">Sign Up with Email</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-outline-primary prev-btn" data-prev="1">Back</button>
+                            <button class="btn btn-primary next-btn" data-next="3" disabled id="method-next-btn">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Email Registration -->
+            <div class="form-step" id="step-3-email">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h2 class="mb-4 text-center">Register Your Email</h2>
+                        <p class="text-center mb-5">We'll create a smart wallet for you and send governance proposals to this email</p>
+                        
+                        <form id="email-form">
+                            <div class="mb-4">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control form-control-lg" id="email" placeholder="your@email.com" required>
+                                <div class="form-text">We'll never share your email with third parties.</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="name" class="form-label">Your Name (Optional)</label>
+                                <input type="text" class="form-control form-control-lg" id="name" placeholder="John Doe">
+                            </div>
+                            
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="terms-check" required>
+                                <label class="form-check-label" for="terms-check">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                            </div>
+                        </form>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-outline-primary prev-btn" data-prev="2">Back</button>
+                            <button class="btn btn-primary" id="create-account-btn">Create Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Wallet Connection -->
+            <div class="form-step" id="step-3-wallet">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h2 class="mb-4 text-center">Connect Your Wallet</h2>
+                        <p class="text-center mb-5">Connect your wallet to delegate your governance tokens</p>
+                        
+                        <div class="text-center mb-4">
+                            <div id="wallet-status" class="alert alert-info">
+                                Please connect your wallet to continue
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card step-card wallet-option">
+                                    <div class="card-body text-center p-3">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask" height="60" class="mb-3">
+                                        <h5>MetaMask</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card step-card wallet-option">
+                                    <div class="card-body text-center p-3">
+                                        <img src="https://altcoinsbox.com/wp-content/uploads/2023/01/coinbase-wallet-logo.png" alt="Coinbase Wallet" height="60" class="mb-3">
+                                        <h5>Coinbase Wallet</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card step-card wallet-option">
+                                    <div class="card-body text-center p-3">
+                                        <img src="https://walletconnect.com/images/logo.svg" alt="WalletConnect" height="60" class="mb-3">
+                                        <h5>WalletConnect</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Email Address for Notifications</label>
+                            <input type="email" class="form-control form-control-lg" id="wallet-email" placeholder="your@email.com" required>
+                            <div class="form-text">We'll send governance proposals to this email</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-outline-primary prev-btn" data-prev="2">Back</button>
+                            <button class="btn btn-primary" id="connect-wallet-continue" disabled>Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Delegation -->
+            <div class="form-step" id="step-4">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h2 class="mb-4 text-center">Delegate Your Governance Tokens</h2>
+                        <p class="text-center mb-5">To vote via email, you need to delegate your governance power to your smart wallet</p>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Delegation doesn't transfer your tokens. It only allows our agent to vote on your behalf.
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="mb-3">Your Governance Tokens</h5>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Token</th>
+                                                <th>Balance</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="https://cryptologos.cc/logos/uniswap-uni-logo.png" class="chain-logo" alt="UNI">
+                                                        <span>UNI</span>
+                                                    </div>
+                                                </td>
+                                                <td>100.0</td>
+                                                <td><span class="badge bg-warning">Not Delegated</span></td>
+                                                <td><button class="btn btn-sm btn-primary delegate-btn">Delegate</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="https://cryptologos.cc/logos/aave-aave-logo.png" class="chain-logo" alt="AAVE">
+                                                        <span>AAVE</span>
+                                                    </div>
+                                                </td>
+                                                <td>5.0</td>
+                                                <td><span class="badge bg-warning">Not Delegated</span></td>
+                                                <td><button class="btn btn-sm btn-primary delegate-btn">Delegate</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="https://cryptologos.cc/logos/optimism-op-logo.png" class="chain-logo" alt="OP">
+                                                        <span>OP</span>
+                                                    </div>
+                                                </td>
+                                                <td>250.0</td>
+                                                <td><span class="badge bg-warning">Not Delegated</span></td>
+                                                <td><button class="btn btn-sm btn-primary delegate-btn">Delegate</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-outline-primary prev-btn" data-prev="3">Back</button>
+                            <button class="btn btn-primary next-btn" data-next="5">Continue Without Delegating</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Completion -->
+            <div class="form-step" id="step-5">
+                <div class="card">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                        </div>
+                        <h2 class="mb-3">You're All Set!</h2>
+                        <p class="mb-4">Your account has been created successfully. You'll start receiving governance proposal digests via email soon.</p>
+                        
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="mb-3">Your Smart Wallet</h5>
+                                <p class="mb-2"><strong>Address:</strong> <span id="smart-wallet-address">0x1234...5678</span> <button class="btn btn-sm btn-outline-primary ms-2 copy-btn" data-clipboard-target="#smart-wallet-address"><i class="bi bi-clipboard"></i></button></p>
+                                <p class="mb-0"><strong>Email:</strong> <span id="user-email">user@example.com</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>How to vote:</strong> When you receive a proposal email, simply reply with "Vote FOR [proposal-id]", "Vote AGAINST [proposal-id]", or "Vote ABSTAIN [proposal-id]".
+                        </div>
+                        
+                        <a href="dashboard.html" class="btn btn-primary btn-lg">Go to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white py-4 mt-5 border-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">© 2025 Email-Driven DAO Governance Agent</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="#" class="text-muted me-3">Privacy Policy</a>
+                    <a href="#" class="text-muted me-3">Terms of Service</a>
+                    <a href="#" class="text-muted">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Progress bar
+            const progressBar = document.getElementById('progress-bar');
+            const updateProgress = (step) => {
+                const totalSteps = 5;
+                const progress = (step / totalSteps) * 100;
+                progressBar.style.width = `${progress}%`;
+                progressBar.setAttribute('aria-valuenow', progress);
+            };
+            
+            // Navigation between steps
+            const nextButtons = document.querySelectorAll('.next-btn');
+            const prevButtons = document.querySelectorAll('.prev-btn');
+            const formSteps = document.querySelectorAll('.form-step');
+            
+            let currentStep = 1;
+            updateProgress(currentStep);
+            
+            nextButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const nextStep = parseInt(this.getAttribute('data-next'));
+                    
+                    // Hide current step
+                    document.getElementById(`step-${currentStep}`).classList.remove('active');
+                    
+                    // Show next step based on onboarding method
+                    if (currentStep === 2) {
+                        if (document.getElementById('web3-option').classList.contains('selected')) {
+                            document.getElementById('step-3-wallet').classList.add('active');
+                        } else {
+                            document.getElementById('step-3-email').classList.add('active');
+                        }
+                    } else if (nextStep === 3) {
+                        // This is handled by the specific button click handlers
+                    } else {
+                        document.getElementById(`step-${nextStep}`).classList.add('active');
+                    }
+                    
+                    currentStep = nextStep;
+                    updateProgress(currentStep);
+                });
+            });
+            
+            prevButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const prevStep = parseInt(this.getAttribute('data-prev'));
+                    
+                    // Hide current step
+                    if (currentStep === 3) {
+                        document.getElementById('step-3-email').classList.remove('active');
+                        document.getElementById('step-3-wallet').classList.remove('active');
+                    } else {
+                        document.getElementById(`step-${currentStep}`).classList.remove('active');
+                    }
+                    
+                    // Show previous step
+                    document.getElementById(`step-${prevStep}`).classList.add('active');
+                    
+                    currentStep = prevStep;
+                    updateProgress(currentStep);
+                });
+            });
+            
+            // Onboarding method selection
+            const web3Option = document.getElementById('web3-option');
+            const emailOption = document.getElementById('email-option');
+            const methodNextBtn = document.getElementById('method-next-btn');
+            
+            web3Option.addEventListener('click', function() {
+                web3Option.classList.add('selected');
+                web3Option.style.borderColor = '#4f46e5';
+                emailOption.classList.remove('selected');
+                emailOption.style.borderColor = '';
+                methodNextBtn.disabled = false;
+            });
+            
+            emailOption.addEventListener('click', function() {
+                emailOption.classList.add('selected');
+                emailOption.style.borderColor = '#4f46e5';
+                web3Option.classList.remove('selected');
+                web3Option.style.borderColor = '';
+                methodNextBtn.disabled = false;
+            });
+            
+            // Email signup
+            const emailSignupBtn = document.querySelector('.email-signup-btn');
+            emailSignupBtn.addEventListener('click', function() {
+                document.getElementById('step-2').classList.remove('active');
+                document.getElementById('step-3-email').classList.add('active');
+                currentStep = 3;
+                updateProgress(currentStep);
+            });
+            
+            // Wallet connection
+            const connectWalletBtn = document.querySelector('.connect-wallet-btn');
+            connectWalletBtn.addEventListener('click', function() {
+                document.getElementById('step-2').classList.remove('active');
+                document.getElementById('step-3-wallet').classList.add('active');
+                currentStep = 3;
+                updateProgress(currentStep);
+            });
+            
+            // Wallet options
+            const walletOptions = document.querySelectorAll('.wallet-option');
+            const connectWalletContinue = document.getElementById('connect-wallet-continue');
+            
+            walletOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    walletOptions.forEach(opt => {
+                        opt.style.borderColor = '';
+                    });
+                    this.style.borderColor = '#4f46e5';
+                    
+                    // Simulate wallet connection
+                    document.getElementById('wallet-status').className = 'alert alert-success';
+                    document.getElementById('wallet-status').innerHTML = '<i class="bi bi-check-circle me-2"></i> Wallet connected successfully: 0x7a16ff8270133f063aab6c9977183d9e72835428';
+                    
+                    connectWalletContinue.disabled = false;
+                });
+            });
+            
+            // Continue after wallet connection
+            connectWalletContinue.addEventListener('click', function() {
+                document.getElementById('step-3-wallet').classList.remove('active');
+                document.getElementById('step-4').classList.add('active');
+                currentStep = 4;
+                updateProgress(currentStep);
+            });
+            
+            // Create account button
+            const createAccountBtn = document.getElementById('create-account-btn');
+            createAccountBtn.addEventListener('click', function() {
+                const email = document.getElementById('email').value;
+                if (!email) {
+                    alert('Please enter your email address');
+                    return;
+                }
+                
+                if (!document.getElementById('terms-check').checked) {
+                    alert('Please agree to the Terms of Service and Privacy Policy');
+                    return;
+                }
+                
+                // Simulate account creation
+                document.getElementById('user-email').textContent = email;
+                document.getElementById('smart-wallet-address').textContent = '0x' + Array(40).fill(0).map(() => 
+                    Math.floor(Math.random() * 16).toString(16)).join('');
+                
+                document.getElementById('step-3-email').classList.remove('active');
+                document.getElementById('step-5').classList.add('active');
+                currentStep = 5;
+                updateProgress(currentStep);
+                
+                // In a real implementation, this would call your API
+                fetch('http://localhost:8080/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    if (data.success) {
+                        document.getElementById('smart-wallet-address').textContent = data.data.smart_wallet_address;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            });
+            
+            // Delegation buttons
+            const delegateButtons = document.querySelectorAll('.delegate-btn');
+            delegateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const statusCell = row.querySelector('td:nth-child(3) span');
+                    
+                    // Simulate delegation
+                    statusCell.className = 'badge bg-success';
+                    statusCell.textContent = 'Delegated';
+                    this.textContent = 'Delegated';
+                    this.disabled = true;
+                    this.className = 'btn btn-sm btn-success';
+                    
+                    // Check if all tokens are delegated
+                    const allDelegated = Array.from(document.querySelectorAll('.delegate-btn')).every(btn => btn.disabled);
+                    if (allDelegated) {
+                        document.querySelector('[data-next="5"]').textContent = 'Continue';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
