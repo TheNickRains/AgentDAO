@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useAccount, useContractRead, useContractWrite, useWaitForTransaction } from 'wagmi';
+import { useAccount, useContractRead, useContractWrite, useWaitForTransaction, useNetwork, useSwitchNetwork } from 'wagmi';
+import { base } from 'wagmi/chains';
+import { getChainName, isChainSupported } from './daoUtils';
 
 // Governor contract ABI (simplified for common functions)
 const governorAbi = [
@@ -42,26 +44,49 @@ const governorAbi = [
   },
 ];
 
+// Map of proposal states to readable strings
+const proposalStateMap = {
+  0: 'Pending',
+  1: 'Active',
+  2: 'Canceled',
+  3: 'Defeated',
+  4: 'Succeeded',
+  5: 'Queued',
+  6: 'Expired',
+  7: 'Executed',
+};
+
 /**
- * Custom hook for interacting with DAO governance contracts
+ * Custom hook for interacting with DAO governance contracts across chains
  * @param {string} governorAddress - The address of the governor contract
+ * @param {number} chainId - The chain ID where the governor contract is deployed
  * @returns {Object} Governance functions and state
  */
-export function useGovernance(governorAddress) {
+export function useGovernance(governorAddress, chainId) {
   const { address, isConnected } = useAccount();
+  const { chain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
   const [proposalStates, setProposalStates] = useState({});
-
+  const [error, setError] = useState(null);
+  
+  // Check if we're on the correct chain
+  const isCorrectChain = chain?.id === chainId;
+  
+  // Check if the chain is supported
+  const isSupported = isChainSupported(chainId);
+  
   // Read the governor name
   const { data: governorName } = useContractRead({
     address: governorAddress,
     abi: governorAbi,
     functionName: 'name',
-    enabled: Boolean(governorAddress),
+    chainId,
+    enabled: Boolean(governorAddress) && isSupported,
   });
 
   // Function to get proposal state
   const getProposalState = async (proposalId) => {
-    if (!governorAddress || !proposalId) return null;
+    if (!governorAddress || !proposalId || !isSupported) return null;
     
     try {
       const { data } = await useContractRead({
@@ -69,24 +94,37 @@ export function useGovernance(governorAddress) {
         abi: governorAbi,
         functionName: 'state',
         args: [proposalId],
+        chainId,
       });
       
-      // Map state numbers to readable strings
-      const stateMap = {
-        0: 'Pending',
-        1: 'Active',
-        2: 'Canceled',
-        3: 'Defeated',
-        4: 'Succeeded',
-        5: 'Queued',
-        6: 'Expired',
-        7: 'Executed',
-      };
-      
-      return stateMap[data] || 'Unknown';
+      return proposalStateMap[data] || 'Unknown';
     } catch (error) {
       console.error('Error fetching proposal state:', error);
       return 'Error';
+    }
+  };
+
+  // Function to get proposal votes
+  const getProposalVotes = async (proposalId) => {
+    if (!governorAddress || !proposalId || !isSupported) return null;
+    
+    try {
+      const { data } = await useContractRead({
+        address: governorAddress,
+        abi: governorAbi,
+        functionName: 'proposalVotes',
+        args: [proposalId],
+        chainId,
+      });
+      
+      return {
+        against: data[0],
+        for: data[1],
+        abstain: data[2],
+      };
+    } catch (error) {
+      console.error('Error fetching proposal votes:', error);
+      return null;
     }
   };
 
@@ -95,7 +133,8 @@ export function useGovernance(governorAddress) {
     address: governorAddress,
     abi: governorAbi,
     functionName: 'castVote',
-    enabled: isConnected && Boolean(governorAddress),
+    chainId,
+    enabled: isConnected && Boolean(governorAddress) && isSupported,
   });
 
   // Wait for transaction to be confirmed
@@ -105,19 +144,49 @@ export function useGovernance(governorAddress) {
   });
 
   // Function to vote on a proposal
-  const vote = (proposalId, support) => {
+  const vote = async (proposalId, support) => {
+    setError(null);
+    
     if (!isConnected) {
-      console.error('Wallet not connected');
+      setError('Wallet not connected');
       return;
     }
     
+    if (!isSupported) {
+      setError(`Chain ${getChainName(chainId)} is not supported`);
+      return;
+    }
+    
+    // If we're not on the correct chain, try to switch
+    if (!isCorrectChain) {
+      try {
+        if (switchNetwork) {
+          await switchNetwork(chainId);
+        } else {
+          setError(`Please switch to ${getChainName(chainId)} network manually`);
+          return;
+        }
+      } catch (err) {
+        setError(`Failed to switch to ${getChainName(chainId)}: ${err.message}`);
+        return;
+      }
+    }
+    
     // Support: 0 = Against, 1 = For, 2 = Abstain
-    castVote({ args: [proposalId, support] });
+    try {
+      castVote({ args: [proposalId, support] });
+    } catch (err) {
+      setError(`Failed to cast vote: ${err.message}`);
+    }
   };
+
+  // Special handling for Base chain
+  const isBaseChain = chainId === base.id;
 
   return {
     governorName,
     getProposalState,
+    getProposalVotes,
     vote,
     isVoting,
     isConfirming,
@@ -125,5 +194,10 @@ export function useGovernance(governorAddress) {
     voteConfirmed,
     walletConnected: isConnected,
     walletAddress: address,
+    isCorrectChain,
+    isBaseChain,
+    chainName: getChainName(chainId),
+    error,
+    isSupported,
   };
 } 
