@@ -2,6 +2,7 @@ import axios from 'axios';
 import { saveProposalToDb, getProposalsByWalletFromDb } from '../database/supabaseService';
 import { generateProposalSummary, analyzeUserPreferences } from '../ai/openaiService';
 import { getUserByWallet } from '../user/userService';
+import { getPersonalizedProposalRecommendations } from '../ai/langchainService';
 
 // Boardroom API base URL
 const BOARDROOM_API_BASE_URL = 'https://api.boardroom.info/v1';
@@ -24,6 +25,7 @@ interface ProposalData {
   wallet_address: string;
   created_at: string;
   updated_at: string;
+  dao: string;
   [key: string]: any;
 }
 
@@ -35,12 +37,15 @@ export const fetchProposals = async (walletAddress: string): Promise<ProposalDat
     if (cachedProposals && cachedProposals.length > 0) {
       console.log(`Found ${cachedProposals.length} cached proposals for wallet ${walletAddress}`);
       
-      // Get user and analyze preferences if we have enough proposals
+      // Get user and personalize proposals if we have a user
       const user = await getUserByWallet(walletAddress);
-      if (user && cachedProposals.length > 3) {
-        // Analyze user preferences to rank proposals
-        const rankedProposals = await analyzeUserPreferences(user.id, cachedProposals as any);
-        return rankedProposals as ProposalData[];
+      if (user) {
+        // Use our new AI-powered personalization algorithm
+        const personalizedProposals = await getPersonalizedProposalRecommendations(
+          user.id, 
+          cachedProposals as any
+        );
+        return personalizedProposals as ProposalData[];
       }
       
       return cachedProposals as ProposalData[];
@@ -84,7 +89,9 @@ export const fetchProposals = async (walletAddress: string): Promise<ProposalDat
           choices: proposal.choices,
           wallet_address: walletAddress,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          // Add DAO field for consistency with our template
+          dao: proposal.protocol
         };
         
         // Save to database
@@ -96,11 +103,15 @@ export const fetchProposals = async (walletAddress: string): Promise<ProposalDat
     
     console.log(`Fetched and processed ${proposals.length} proposals for wallet ${walletAddress}`);
     
+    // Get user and personalize proposals if we have a user
     const user = await getUserByWallet(walletAddress);
-    if (user && proposals.length > 3) {
-      // Analyze user preferences to rank proposals
-      const rankedProposals = await analyzeUserPreferences(user.id, proposals as any);
-      return rankedProposals as ProposalData[];
+    if (user) {
+      // Use our new AI-powered personalization algorithm
+      const personalizedProposals = await getPersonalizedProposalRecommendations(
+        user.id, 
+        proposals as any
+      );
+      return personalizedProposals as ProposalData[];
     }
     
     return proposals as ProposalData[];

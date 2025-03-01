@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent DAO Authentication Example</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .error {
+      color: #e74c3c;
+      background-color: #fadbd8;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .success {
+      color: #27ae60;
+      background-color: #d4efdf;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Agent DAO Authentication Example</h1>
+    <p>This example demonstrates how to authenticate with the Agent DAO API using wallet signatures and JWT tokens.</p>
+    
+    <div id="login-section">
+      <h2>Connect Your Wallet</h2>
+      <p>Click the button below to connect your wallet and authenticate with Agent DAO.</p>
+      <button id="login-button">Connect Wallet</button>
+      <div id="login-status" class="hidden"></div>
+    </div>
+    
+    <div id="user-info-section" class="hidden card">
+      <div id="user-info"></div>
+    </div>
+    
+    <div id="proposals-section" class="hidden card">
+      <div id="proposals"></div>
+    </div>
+  </div>
+  
+  <!-- Load ethers.js -->
+  <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+  
+  <!-- Load our authentication example script -->
+  <script src="auth-example.js"></script>
+  
+  <script>
+    // Additional UI handling
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginButton = document.getElementById('login-button');
+      const loginStatus = document.getElementById('login-status');
+      const userInfoSection = document.getElementById('user-info-section');
+      const proposalsSection = document.getElementById('proposals-section');
+      
+      // Check if already logged in
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        loginButton.textContent = 'Re-connect Wallet';
+        showMessage(loginStatus, 'You are already logged in. Click to re-authenticate.', 'success');
+      }
+      
+      function showMessage(element, message, type) {
+        element.textContent = message;
+        element.className = type; // 'error' or 'success'
+        element.classList.remove('hidden');
+      }
+      
+      loginButton.addEventListener('click', async () => {
+        try {
+          loginButton.disabled = true;
+          loginButton.textContent = 'Connecting...';
+          showMessage(loginStatus, 'Connecting to wallet...', 'success');
+          
+          // This function is defined in auth-example.js
+          const result = await completeAuthFlow();
+          
+          // Show user info
+          userInfoSection.classList.remove('hidden');
+          
+          // Show proposals if available
+          if (result.proposals && result.proposals.length > 0) {
+            proposalsSection.classList.remove('hidden');
+          }
+          
+          loginButton.textContent = 'Connected';
+          showMessage(loginStatus, 'Authentication successful!', 'success');
+        } catch (error) {
+          console.error('Authentication error:', error);
+          showMessage(loginStatus, `Authentication failed: ${error.message}`, 'error');
+          loginButton.textContent = 'Try Again';
+        } finally {
+          loginButton.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

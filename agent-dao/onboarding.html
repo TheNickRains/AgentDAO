@@ -310,7 +310,7 @@
                             <div class="card-body">
                                 <h5 class="mb-3">Your Governance Tokens</h5>
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table class="table" id="governance-tokens-table">
                                         <thead>
                                             <tr>
                                                 <th>Token</th>
@@ -321,37 +321,12 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <img src="https://cryptologos.cc/logos/uniswap-uni-logo.png" class="chain-logo" alt="UNI">
-                                                        <span>UNI</span>
+                                                <td colspan="4" class="text-center">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
                                                     </div>
+                                                    <p class="mt-2">Loading your governance tokens...</p>
                                                 </td>
-                                                <td>100.0</td>
-                                                <td><span class="badge bg-warning">Not Delegated</span></td>
-                                                <td><button class="btn btn-sm btn-primary delegate-btn">Delegate</button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <img src="https://cryptologos.cc/logos/aave-aave-logo.png" class="chain-logo" alt="AAVE">
-                                                        <span>AAVE</span>
-                                                    </div>
-                                                </td>
-                                                <td>5.0</td>
-                                                <td><span class="badge bg-warning">Not Delegated</span></td>
-                                                <td><button class="btn btn-sm btn-primary delegate-btn">Delegate</button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <img src="https://cryptologos.cc/logos/optimism-op-logo.png" class="chain-logo" alt="OP">
-                                                        <span>OP</span>
-                                                    </div>
-                                                </td>
-                                                <td>250.0</td>
-                                                <td><span class="badge bg-warning">Not Delegated</span></td>
-                                                <td><button class="btn btn-sm btn-primary delegate-btn">Delegate</button></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -510,6 +485,7 @@
             // Wallet connection
             const connectWalletBtn = document.querySelector('.connect-wallet-btn');
             connectWalletBtn.addEventListener('click', function() {
+                connectWallet();
                 document.getElementById('step-2').classList.remove('active');
                 document.getElementById('step-3-wallet').classList.add('active');
                 currentStep = 3;
@@ -527,16 +503,22 @@
                     });
                     this.style.borderColor = '#4f46e5';
                     
-                    // Simulate wallet connection
-                    document.getElementById('wallet-status').className = 'alert alert-success';
-                    document.getElementById('wallet-status').innerHTML = '<i class="bi bi-check-circle me-2"></i> Wallet connected successfully: 0x7a16ff8270133f063aab6c9977183d9e72835428';
-                    
-                    connectWalletContinue.disabled = false;
+                    // Connect wallet
+                    connectWallet();
                 });
             });
             
             // Continue after wallet connection
             connectWalletContinue.addEventListener('click', function() {
+                const email = document.getElementById('wallet-email').value;
+                if (!email) {
+                    alert('Please enter your email address');
+                    return;
+                }
+                
+                // Register email with wallet
+                registerEmail(email);
+                
                 document.getElementById('step-3-wallet').classList.remove('active');
                 document.getElementById('step-4').classList.add('active');
                 currentStep = 4;
@@ -557,34 +539,8 @@
                     return;
                 }
                 
-                // Simulate account creation
-                document.getElementById('user-email').textContent = email;
-                document.getElementById('smart-wallet-address').textContent = '0x' + Array(40).fill(0).map(() => 
-                    Math.floor(Math.random() * 16).toString(16)).join('');
-                
-                document.getElementById('step-3-email').classList.remove('active');
-                document.getElementById('step-5').classList.add('active');
-                currentStep = 5;
-                updateProgress(currentStep);
-                
-                // In a real implementation, this would call your API
-                fetch('http://localhost:8080/api/users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    if (data.success) {
-                        document.getElementById('smart-wallet-address').textContent = data.data.smart_wallet_address;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+                // Create a new wallet for the user
+                createWalletAndRegister(email);
             });
             
             // Delegation buttons
@@ -593,8 +549,12 @@
                 button.addEventListener('click', function() {
                     const row = this.closest('tr');
                     const statusCell = row.querySelector('td:nth-child(3) span');
+                    const tokenSymbol = row.querySelector('td:nth-child(1) span').textContent;
                     
-                    // Simulate delegation
+                    // Delegate token
+                    delegateToken(tokenSymbol);
+                    
+                    // Update UI
                     statusCell.className = 'badge bg-success';
                     statusCell.textContent = 'Delegated';
                     this.textContent = 'Delegated';
@@ -608,6 +568,411 @@
                     }
                 });
             });
+        });
+
+        // Connect wallet function
+        async function connectWallet() {
+            try {
+                // Check if Web3 is available
+                if (typeof window.ethereum === 'undefined') {
+                    alert('Please install MetaMask or another Web3 wallet to continue');
+                    return;
+                }
+                
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const walletAddress = accounts[0];
+                
+                // Store wallet address in localStorage
+                localStorage.setItem('walletAddress', walletAddress);
+                
+                // Update UI
+                const walletStatus = document.getElementById('wallet-status');
+                walletStatus.className = 'alert alert-success';
+                walletStatus.innerHTML = `<i class="bi bi-check-circle me-2"></i> Wallet connected successfully: ${walletAddress}`;
+                
+                // Enable continue button
+                document.getElementById('connect-wallet-continue').disabled = false;
+                
+                // Get nonce for wallet verification
+                await getNonceForWallet(walletAddress);
+                
+                return walletAddress;
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet. Please try again.');
+                return null;
+            }
+        }
+
+        // Get nonce for wallet verification
+        async function getNonceForWallet(walletAddress) {
+            try {
+                const response = await fetch(`/api/auth/nonce?walletAddress=${walletAddress}`);
+                const data = await response.json();
+                
+                if (data.success && data.data.nonce) {
+                    localStorage.setItem('authNonce', data.data.nonce);
+                    console.log('Nonce received:', data.data.nonce);
+                    return data.data.nonce;
+                } else {
+                    console.error('Failed to get nonce:', data.error);
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error getting nonce:', error);
+                return null;
+            }
+        }
+
+        // Verify wallet with signature
+        async function verifyWallet(walletAddress, nonce) {
+            try {
+                if (!walletAddress || !nonce) {
+                    alert('Please connect your wallet first');
+                    return null;
+                }
+                
+                // Request signature from user
+                const message = `Sign this message to verify your wallet ownership: ${nonce}`;
+                const signature = await window.ethereum.request({
+                    method: 'personal_sign',
+                    params: [message, walletAddress]
+                });
+                
+                // Verify signature with backend
+                const response = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        walletAddress,
+                        nonce,
+                        signature
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data.token) {
+                    // Store auth token
+                    localStorage.setItem('authToken', data.data.token);
+                    return data.data.token;
+                } else {
+                    alert(`Failed to verify wallet: ${data.error}`);
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error verifying wallet:', error);
+                alert('Failed to verify wallet. Please try again.');
+                return null;
+            }
+        }
+
+        // Register email with wallet
+        async function registerEmail(email) {
+            try {
+                const walletAddress = localStorage.getItem('walletAddress');
+                const nonce = localStorage.getItem('authNonce');
+                
+                if (!walletAddress || !nonce) {
+                    alert('Please connect your wallet first');
+                    return;
+                }
+                
+                // Verify wallet first
+                const authToken = await verifyWallet(walletAddress, nonce);
+                
+                if (!authToken) {
+                    return;
+                }
+                
+                // Show loading state
+                const walletStatus = document.getElementById('wallet-status');
+                walletStatus.className = 'alert alert-info';
+                walletStatus.innerHTML = `<i class="bi bi-gear-wide-connected me-2"></i> Creating your smart wallet...`;
+                
+                // Register email with backend
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        email,
+                        walletAddress
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update UI in final step
+                    document.getElementById('user-email').textContent = email;
+                    document.getElementById('smart-wallet-address').textContent = data.data.smartWalletAddress || walletAddress;
+                    
+                    // Show the smart wallet creation success message
+                    walletStatus.className = 'alert alert-success';
+                    walletStatus.innerHTML = `
+                        <i class="bi bi-check-circle me-2"></i> 
+                        Smart wallet created successfully: 
+                        <strong>${data.data.smartWalletAddress}</strong>
+                    `;
+                    
+                    // Go to delegation step
+                    document.getElementById('step-3-wallet').classList.remove('active');
+                    document.getElementById('step-4').classList.add('active');
+                    updateProgress(4);
+                    
+                    // Load governance tokens for delegation
+                    loadGovernanceTokens(walletAddress, data.data.smartWalletAddress);
+                    
+                    return true;
+                } else {
+                    alert(`Failed to register email: ${data.error}`);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error registering email:', error);
+                alert('Failed to register email. Please try again.');
+                return false;
+            }
+        }
+
+        // Create wallet and register for email-only users
+        async function createWalletAndRegister(email) {
+            try {
+                // Show loading state
+                const createAccountBtn = document.getElementById('create-account-btn');
+                createAccountBtn.innerHTML = `
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Creating Account...
+                `;
+                createAccountBtn.disabled = true;
+                
+                // Create wallet and register with backend
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email,
+                        createWallet: true
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Store wallet address and token
+                    localStorage.setItem('walletAddress', data.data.walletAddress);
+                    localStorage.setItem('authToken', data.data.token);
+                    
+                    // Update UI in final step
+                    document.getElementById('user-email').textContent = email;
+                    document.getElementById('smart-wallet-address').textContent = data.data.smartWalletAddress || data.data.walletAddress;
+                    
+                    // Go to completion step
+                    document.getElementById('step-3-email').classList.remove('active');
+                    document.getElementById('step-5').classList.add('active');
+                    updateProgress(5);
+                    
+                    return true;
+                } else {
+                    alert(`Failed to create account: ${data.error}`);
+                    createAccountBtn.innerHTML = 'Create Account';
+                    createAccountBtn.disabled = false;
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error creating account:', error);
+                alert('Failed to create account. Please try again.');
+                const createAccountBtn = document.getElementById('create-account-btn');
+                createAccountBtn.innerHTML = 'Create Account';
+                createAccountBtn.disabled = false;
+                return false;
+            }
+        }
+
+        // Load governance tokens for delegation
+        async function loadGovernanceTokens(walletAddress, smartWalletAddress) {
+            try {
+                const authToken = localStorage.getItem('authToken');
+                
+                if (!authToken) {
+                    return;
+                }
+                
+                // Fetch governance tokens
+                const response = await fetch(`/api/tokens?walletAddress=${walletAddress}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const tokens = data.data;
+                    const tableBody = document.querySelector('#governance-tokens-table tbody');
+                    
+                    if (tokens.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="text-center">No governance tokens found in your wallet</td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    let html = '';
+                    
+                    tokens.forEach(token => {
+                        html += `
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="${token.logo || 'https://cryptologos.cc/logos/placeholder-logo.png'}" class="chain-logo" alt="${token.symbol}">
+                                        <span>${token.symbol}</span>
+                                    </div>
+                                </td>
+                                <td>${token.balance}</td>
+                                <td><span class="badge ${token.delegated ? 'bg-success' : 'bg-warning'}">${token.delegated ? 'Delegated' : 'Not Delegated'}</span></td>
+                                <td>
+                                    <button class="btn btn-sm ${token.delegated ? 'btn-success disabled' : 'btn-primary'} delegate-btn" 
+                                        data-token="${token.symbol}" 
+                                        ${token.delegated ? 'disabled' : ''}>
+                                        ${token.delegated ? 'Delegated' : 'Delegate'}
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableBody.innerHTML = html;
+                    
+                    // Add event listeners to delegate buttons
+                    document.querySelectorAll('.delegate-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const tokenSymbol = this.getAttribute('data-token');
+                            delegateToken(tokenSymbol, smartWalletAddress);
+                        });
+                    });
+                } else {
+                    console.error('Failed to fetch governance tokens:', data.error);
+                }
+            } catch (error) {
+                console.error('Error loading governance tokens:', error);
+            }
+        }
+
+        // Delegate token to smart wallet
+        async function delegateToken(tokenSymbol, smartWalletAddress) {
+            try {
+                const walletAddress = localStorage.getItem('walletAddress');
+                const authToken = localStorage.getItem('authToken');
+                
+                if (!walletAddress || !authToken) {
+                    alert('Please connect your wallet first');
+                    return false;
+                }
+                
+                // Update button state
+                const button = document.querySelector(`.delegate-btn[data-token="${tokenSymbol}"]`);
+                const originalText = button.textContent;
+                button.innerHTML = `
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Delegating...
+                `;
+                button.disabled = true;
+                
+                // Call delegation API
+                const response = await fetch('/api/delegate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        walletAddress,
+                        tokenSymbol,
+                        smartWalletAddress
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update UI
+                    const row = button.closest('tr');
+                    const statusCell = row.querySelector('td:nth-child(3) span');
+                    
+                    statusCell.className = 'badge bg-success';
+                    statusCell.textContent = 'Delegated';
+                    button.textContent = 'Delegated';
+                    button.className = 'btn btn-sm btn-success disabled';
+                    button.disabled = true;
+                    
+                    // Check if all tokens are delegated
+                    const allDelegated = Array.from(document.querySelectorAll('.delegate-btn')).every(btn => btn.disabled);
+                    if (allDelegated) {
+                        document.querySelector('[data-next="5"]').textContent = 'Continue';
+                    }
+                    
+                    return true;
+                } else {
+                    console.error(`Failed to delegate ${tokenSymbol}: ${data.error}`);
+                    alert(`Failed to delegate ${tokenSymbol}: ${data.error}`);
+                    button.textContent = originalText;
+                    button.disabled = false;
+                    return false;
+                }
+            } catch (error) {
+                console.error(`Error delegating ${tokenSymbol}:`, error);
+                alert(`Error delegating ${tokenSymbol}. Please try again.`);
+                const button = document.querySelector(`.delegate-btn[data-token="${tokenSymbol}"]`);
+                button.textContent = 'Delegate';
+                button.disabled = false;
+                return false;
+            }
+        }
+
+        // Complete setup and go to dashboard
+        function completeSetup() {
+            window.location.href = '/dashboard.html';
+        }
+
+        // Redirect to dashboard if already authenticated
+        document.addEventListener('DOMContentLoaded', function() {
+            const walletAddress = localStorage.getItem('walletAddress');
+            const authToken = localStorage.getItem('authToken');
+            
+            if (walletAddress && authToken) {
+                // Check if token is valid
+                fetch('/api/auth/validate', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // User is authenticated, redirect to dashboard
+                        window.location.href = '/dashboard.html';
+                    } else {
+                        // Token is invalid, clear localStorage
+                        localStorage.removeItem('walletAddress');
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('authNonce');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error validating token:', error);
+                });
+            }
         });
     </script>
 </body>

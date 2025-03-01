@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import dotenv from 'dotenv';
+import { getSmartAccount, executeGaslessTransaction } from './biconomyService';
 
 // Import ABI definitions
 import votingHubAbi from '../../contracts/abis/VotingHub.json';
@@ -7,7 +8,7 @@ import votingHubAbi from '../../contracts/abis/VotingHub.json';
 dotenv.config();
 
 // Chain IDs
-const CHAIN_IDS = {
+export const CHAIN_IDS = {
   BASE: 8453,
   ETHEREUM: 1,
   OPTIMISM: 10,
@@ -17,12 +18,12 @@ const CHAIN_IDS = {
 
 // Contract addresses (these would be the actual deployed contract addresses)
 const CONTRACT_ADDRESSES = {
-  VOTING_HUB: '0x0000000000000000000000000000000000000000', // Placeholder
+  VOTING_HUB: process.env.VOTING_HUB_ADDRESS || '0x0000000000000000000000000000000000000000',
   CCIP_RECEIVERS: {
-    [CHAIN_IDS.ETHEREUM]: '0x0000000000000000000000000000000000000000', // Placeholder
-    [CHAIN_IDS.OPTIMISM]: '0x0000000000000000000000000000000000000000', // Placeholder
-    [CHAIN_IDS.ARBITRUM]: '0x0000000000000000000000000000000000000000', // Placeholder
-    [CHAIN_IDS.POLYGON]: '0x0000000000000000000000000000000000000000'  // Placeholder
+    [CHAIN_IDS.ETHEREUM]: process.env.CCIP_RECEIVER_ETH_ADDRESS || '0x0000000000000000000000000000000000000000',
+    [CHAIN_IDS.OPTIMISM]: process.env.CCIP_RECEIVER_OPTIMISM_ADDRESS || '0x0000000000000000000000000000000000000000',
+    [CHAIN_IDS.ARBITRUM]: process.env.CCIP_RECEIVER_ARBITRUM_ADDRESS || '0x0000000000000000000000000000000000000000',
+    [CHAIN_IDS.POLYGON]: process.env.CCIP_RECEIVER_POLYGON_ADDRESS || '0x0000000000000000000000000000000000000000'
   }
 };
 
@@ -49,7 +50,7 @@ export const initializeCCIP = (): void => {
 };
 
 // Get the target chain ID for a protocol
-const getTargetChainId = (protocol: string): number => {
+export const getTargetChainId = (protocol: string): number => {
   // This is a simplified mapping - in a real implementation, you would have a more comprehensive mapping
   const protocolChainMap: { [protocol: string]: number } = {
     'uniswap': CHAIN_IDS.ETHEREUM,
@@ -63,7 +64,7 @@ const getTargetChainId = (protocol: string): number => {
   return protocolChainMap[protocol.toLowerCase()] || CHAIN_IDS.ETHEREUM;
 };
 
-// Execute a vote transaction via CCIP
+// Execute a vote transaction via CCIP with gasless transactions
 export const executeVoteTransaction = async (
   smartWalletAddress: string,
   protocol: string,
@@ -80,53 +81,94 @@ export const executeVoteTransaction = async (
       throw new Error('Base provider not initialized');
     }
     
-    // In a real implementation, you would use the user's smart wallet to sign the transaction
-    // For this example, we'll use a placeholder private key
+    // Get the private key for the agent's wallet
     const privateKey = process.env.PRIVATE_KEY;
     if (!privateKey) {
       throw new Error('Private key not found in environment variables');
     }
     
-    // Create a wallet with the private key
-    const wallet = new ethers.Wallet(privateKey, baseProvider);
+    // Get the smart account for gasless transactions
+    const smartAccount = await getSmartAccount(privateKey);
+    
+    // Create a contract instance for the Voting Hub
+    const votingHubInterface = new ethers.utils.Interface(votingHubAbi);
+    
+    // Encode the castCrossChainVote function call
+    const data = votingHubInterface.encodeFunctionData('castCrossChainVote', [
+      targetChainId,
+      {
+        voter: smartWalletAddress,
+        proposalId,
+        choice,
+        protocol,
+        targetChainId
+      }
+    ]);
+    
+    // Execute the gasless transaction
+    const txHash = await executeGaslessTransaction(
+      smartAccount,
+      CONTRACT_ADDRESSES.VOTING_HUB,
+      data
+    );
+    
+    console.log(`Cross-chain vote transaction sent: ${txHash}`);
+    
+    return txHash;
+  } catch (error) {
+    console.error('Error executing vote transaction:', error);
+    throw new Error(`Failed to execute vote transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+// Check the status of a CCIP message
+export const checkCcipMessageStatus = async (
+  messageId: string,
+  sourceChainId: number = CHAIN_IDS.BASE
+): Promise<string> => {
+  try {
+    // Get the provider for the source chain
+    const provider = providers[sourceChainId];
+    if (!provider) {
+      throw new Error(`Provider not initialized for chain ID ${sourceChainId}`);
+    }
     
     // Create a contract instance for the Voting Hub
     const votingHub = new ethers.Contract(
       CONTRACT_ADDRESSES.VOTING_HUB,
       votingHubAbi,
-      wallet
+      provider
     );
     
-    // Prepare the vote data
-    const voteData = {
-      voter: smartWalletAddress,
-      proposalId,
-      choice,
-      protocol,
-      targetChainId
-    };
+    // Call the getCcipMessageStatus function
+    const status = await votingHub.getCcipMessageStatus(messageId);
     
-    // Estimate the CCIP fee
-    const ccipFee = await votingHub.estimateCrossChainVoteFee(
-      targetChainId,
-      voteData
-    );
-    
-    // Execute the cross-chain vote
-    const tx = await votingHub.castCrossChainVote(
-      targetChainId,
-      voteData,
-      { value: ccipFee.mul(11).div(10) } // Add 10% buffer to the fee
-    );
-    
-    // Wait for the transaction to be mined
-    const receipt = await tx.wait();
-    
-    console.log(`Vote transaction sent: ${receipt.transactionHash}`);
-    
-    return receipt.transactionHash;
+    return status;
   } catch (error) {
-    console.error('Error executing vote transaction:', error);
-    throw new Error(`Failed to execute vote transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('Error checking CCIP message status:', error);
+    throw new Error(`Failed to check CCIP message status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+// Verify that a vote was executed on the target chain
+export const verifyVoteExecution = async (
+  txHash: string,
+  targetChainId: number
+): Promise<boolean> => {
+  try {
+    // Get the provider for the target chain
+    const provider = providers[targetChainId];
+    if (!provider) {
+      throw new Error(`Provider not initialized for chain ID ${targetChainId}`);
+    }
+    
+    // Get the transaction receipt
+    const receipt = await provider.getTransactionReceipt(txHash);
+    
+    // Check if the transaction was successful
+    return receipt && receipt.status === 1;
+  } catch (error) {
+    console.error('Error verifying vote execution:', error);
+    throw new Error(`Failed to verify vote execution: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }; 

@@ -198,97 +198,47 @@
     <div class="container">
         <div class="header">
             <h1>Your DAO Governance Digest</h1>
-            <p>Top proposals recommended for you - February 28, 2025</p>
+            <p>Top proposals recommended for you - {{current_date}}</p>
         </div>
         
         <div class="content">
             <div class="intro">
-                <p>Hello <strong>{{user_email}}</strong>,</p>
+                <p>Hello <strong>{{user_name}}</strong>,</p>
                 <p>Here are the top governance proposals we've selected for you based on your voting history and preferences. To vote, simply reply to this email with your choice.</p>
             </div>
             
             <div class="impact-message">
                 <h3>Your Voice Matters!</h3>
-                <p>Your last vote helped approve a proposal that increased treasury diversification by 15%.</p>
+                <p>{{impact_message}}</p>
             </div>
             
-            <!-- Proposal 1 -->
+            {{#proposals}}
+            <!-- Proposal -->
             <div class="proposal-card">
                 <div class="proposal-header">
                     <div>
-                        <span class="badge badge-active">Active</span>
-                        <img src="https://cryptologos.cc/logos/uniswap-uni-logo.png" class="chain-icon" alt="Uniswap">
-                        <span>Uniswap</span>
+                        <span class="badge badge-active">{{status}}</span>
+                        <img src="{{dao_icon}}" class="chain-icon" alt="{{dao_name}}">
+                        <span>{{dao_name}}</span>
                     </div>
-                    <p class="proposal-deadline">Ends in 2 days</p>
+                    <p class="proposal-deadline">{{deadline}}</p>
                 </div>
-                <h2 class="proposal-title">UNI-P-123: Increase Liquidity Mining Rewards</h2>
-                <p class="proposal-summary">This proposal aims to increase rewards for liquidity providers by 20% for the next quarter, helping attract more users to the platform.</p>
+                <h2 class="proposal-title">{{title}}</h2>
+                <p class="proposal-summary">{{summary}}</p>
                 <div class="ai-recommendation">
                     <strong>AI Recommendation:</strong>
-                    Based on your previous votes supporting liquidity incentives, you might want to vote FOR this proposal.
+                    {{ai_recommendation}}
                 </div>
                 <div class="vote-instructions">
                     <p>To vote, reply with one of these options:</p>
                     <div class="vote-options">
-                        <span class="vote-option vote-for">Vote FOR UNI-P-123</span>
-                        <span class="vote-option vote-against">Vote AGAINST UNI-P-123</span>
-                        <span class="vote-option vote-abstain">Vote ABSTAIN UNI-P-123</span>
+                        {{#vote_options}}
+                        <span class="vote-option {{option_class}}">Vote {{option_name}} {{proposal_id}}</span>
+                        {{/vote_options}}
                     </div>
                 </div>
             </div>
-            
-            <!-- Proposal 2 -->
-            <div class="proposal-card">
-                <div class="proposal-header">
-                    <div>
-                        <span class="badge badge-active">Active</span>
-                        <img src="https://cryptologos.cc/logos/aave-aave-logo.png" class="chain-icon" alt="Aave">
-                        <span>Aave</span>
-                    </div>
-                    <p class="proposal-deadline">Ends in 5 days</p>
-                </div>
-                <h2 class="proposal-title">AIP-87: Add Support for Base Chain</h2>
-                <p class="proposal-summary">This proposal suggests adding Base Chain to the Aave protocol, making it easier for users to borrow and lend on this new network.</p>
-                <div class="ai-recommendation">
-                    <strong>AI Recommendation:</strong>
-                    You've previously supported cross-chain expansion proposals. This aligns with your voting pattern.
-                </div>
-                <div class="vote-instructions">
-                    <p>To vote, reply with one of these options:</p>
-                    <div class="vote-options">
-                        <span class="vote-option vote-for">Vote FOR AIP-87</span>
-                        <span class="vote-option vote-against">Vote AGAINST AIP-87</span>
-                        <span class="vote-option vote-abstain">Vote ABSTAIN AIP-87</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Proposal 3 -->
-            <div class="proposal-card">
-                <div class="proposal-header">
-                    <div>
-                        <span class="badge badge-active">Active</span>
-                        <img src="https://cryptologos.cc/logos/optimism-op-logo.png" class="chain-icon" alt="Optimism">
-                        <span>Optimism</span>
-                    </div>
-                    <p class="proposal-deadline">Ends in 1 day</p>
-                </div>
-                <h2 class="proposal-title">OP-P-45: Retroactive Public Goods Funding</h2>
-                <p class="proposal-summary">This proposal will fund projects that have helped the Optimism ecosystem, giving 5M OP tokens to developers who created useful tools.</p>
-                <div class="ai-recommendation">
-                    <strong>AI Recommendation:</strong>
-                    You've consistently supported public goods funding in the past. This proposal continues that initiative.
-                </div>
-                <div class="vote-instructions">
-                    <p>To vote, reply with one of these options:</p>
-                    <div class="vote-options">
-                        <span class="vote-option vote-for">Vote FOR OP-P-45</span>
-                        <span class="vote-option vote-against">Vote AGAINST OP-P-45</span>
-                        <span class="vote-option vote-abstain">Vote ABSTAIN OP-P-45</span>
-                    </div>
-                </div>
-            </div>
+            {{/proposals}}
             
             <div class="divider"></div>
             

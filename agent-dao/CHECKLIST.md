@@ -10,9 +10,10 @@ Use this checklist to ensure your Email-Driven DAO Governance Agent is ready for
 - [ ] Obtain production OpenAI API key with sufficient quota
 - [ ] Set up Biconomy account and obtain API keys
 - [ ] Register for Boardroom API access
+- [ ] Obtain Coinbase AgentKit API key
 - [ ] Configure RPC endpoints for all supported chains
 - [ ] Set up secure wallet for contract deployment
-- [ ] Update `.env.production` with all production credentials
+- [ ] Update environment variables in Vercel
 - [ ] Configure domain names and DNS settings
 
 ## 2. Smart Contract Deployment
@@ -33,6 +34,7 @@ Use this checklist to ensure your Email-Driven DAO Governance Agent is ready for
   - [ ] Proposals table
   - [ ] Votes table
   - [ ] Preferences table
+  - [ ] LangChain memory table
 - [ ] Set up Row Level Security (RLS) policies
 - [ ] Configure database backups
 - [ ] Create necessary indexes for performance
@@ -50,18 +52,38 @@ Use this checklist to ensure your Email-Driven DAO Governance Agent is ready for
 - [ ] Test email reply parsing
 - [ ] Configure email bounce handling
 
-## 5. Server Infrastructure
+## 5. Vercel Deployment
 
-- [ ] Set up production server(s) with proper security
-- [ ] Configure SSL certificates for all domains
-- [ ] Set up Nginx as reverse proxy
-- [ ] Configure Docker containers
-- [ ] Set up monitoring and alerting
-- [ ] Configure automated backups
-- [ ] Set up CI/CD pipeline for deployments
-- [ ] Configure logging and error tracking
+- [ ] Set up Vercel project
+- [ ] Configure all environment variables in Vercel
+- [ ] Set up Vercel Cron Jobs for scheduled tasks
+- [ ] Configure custom domain in Vercel
+- [ ] Set up Vercel Analytics
+- [ ] Enable Vercel Logs
+- [ ] Configure serverless function regions
+- [ ] Test serverless function execution
 
-## 6. Security Measures
+## 6. AgentKit Configuration
+
+- [ ] Set up Coinbase AgentKit integration
+- [ ] Configure wallet permissions
+- [ ] Test blockchain interactions
+- [ ] Set up transaction monitoring
+- [ ] Configure transaction retry mechanisms
+- [ ] Implement error handling for failed transactions
+- [ ] Document AgentKit integration
+
+## 7. LangChain Setup
+
+- [ ] Configure LangChain with OpenAI
+- [ ] Set up vector embeddings for proposal similarity
+- [ ] Implement memory chains for conversation context
+- [ ] Test email intent parsing
+- [ ] Configure proposal summarization
+- [ ] Set up personalized recommendation system
+- [ ] Implement contextual response generation
+
+## 8. Security Measures
 
 - [ ] Implement rate limiting for API endpoints
 - [ ] Set up firewall rules
@@ -72,7 +94,7 @@ Use this checklist to ensure your Email-Driven DAO Governance Agent is ready for
 - [ ] Implement proper error handling and logging
 - [ ] Set up alerts for failed transactions
 
-## 7. Testing
+## 9. Testing
 
 - [ ] Perform end-to-end testing of the entire flow
   - [ ] User onboarding
@@ -85,7 +107,7 @@ Use this checklist to ensure your Email-Driven DAO Governance Agent is ready for
 - [ ] Perform load testing
 - [ ] Test error scenarios and recovery
 
-## 8. Documentation
+## 10. Documentation
 
 - [ ] Document API endpoints
 - [ ] Create user documentation
@@ -94,7 +116,7 @@ Use this checklist to ensure your Email-Driven DAO Governance Agent is ready for
 - [ ] Document monitoring and maintenance procedures
 - [ ] Create recovery procedures for failures
 
-## 9. Legal and Compliance
+## 11. Legal and Compliance
 
 - [ ] Review privacy policy
 - [ ] Ensure GDPR compliance for email handling
@@ -102,7 +124,7 @@ Use this checklist to ensure your Email-Driven DAO Governance Agent is ready for
 - [ ] Implement proper user data handling
 - [ ] Document data retention policies
 
-## 10. Launch Preparation
+## 12. Launch Preparation
 
 - [ ] Create launch announcement
 - [ ] Prepare marketing materials

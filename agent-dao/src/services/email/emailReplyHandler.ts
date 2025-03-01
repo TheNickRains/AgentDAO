@@ -1,7 +1,8 @@
 import { getUserByEmailFromDb } from '../database/supabaseService';
 import { processVoteCommand } from '../governance/voteService';
-import { generateAIResponse } from '../ai/openaiService';
-import { sendVoteConfirmationEmail } from './postmarkService';
+import { sendVoteConfirmationEmail, sendAIResponseEmail, sendMoreProposalsEmail } from './postmarkService';
+import { getProposalsByWalletFromDb } from '../database/supabaseService';
+import { analyzeEmailReply, answerGovernanceQuestion } from '../ai/langchainService';
 
 interface EmailReplyData {
   From: string;
@@ -33,48 +34,78 @@ export const handleEmailReply = async (emailData: EmailReplyData): Promise<void>
     // Extract the message content (prefer stripped reply if available)
     const messageContent = emailData.StrippedTextReply || emailData.TextBody;
     
-    // Determine the type of command in the email
-    const commandType = determineCommandType(messageContent);
+    // Get the user's proposals for context
+    const userProposals = await getProposalsByWalletFromDb(user.wallet_address);
     
-    switch (commandType.type) {
+    // Use LangChain to analyze the email reply
+    const analysisResult = await analyzeEmailReply(messageContent, userProposals);
+    
+    switch (analysisResult.intent) {
       case 'vote':
         // Process vote command
-        if (commandType.proposalId && commandType.choice) {
+        if (analysisResult.proposalId && analysisResult.choice) {
           const voteResult = await processVoteCommand(
             user.id,
             user.smart_wallet_address,
-            commandType.proposalId,
-            commandType.choice
+            analysisResult.proposalId,
+            analysisResult.choice
           );
           
           // Send confirmation email
           await sendVoteConfirmationEmail(
             userEmail,
             voteResult.proposalTitle,
-            commandType.choice,
+            analysisResult.choice,
             voteResult.txHash
           );
+          
+          console.log(`Vote processed for proposal ${analysisResult.proposalId}, choice: ${analysisResult.choice}`);
         } else {
           console.error('Missing proposalId or choice in vote command');
+          
+          // Send error email
+          await sendAIResponseEmail(
+            userEmail,
+            "I couldn't process your vote because I couldn't identify the proposal ID or your choice. Please try again with a clearer format, such as 'Vote YES on Proposal 123'."
+          );
         }
         break;
         
       case 'question':
         // Process question with AI
-        const aiResponse = await generateAIResponse(messageContent, user.id);
+        const relevantProposal = userProposals.find(p => p.id === analysisResult.proposalId);
         
-        // Send response email (implementation would be in postmarkService)
-        // await sendAIResponseEmail(userEmail, aiResponse);
+        // Generate AI response
+        const aiResponse = await answerGovernanceQuestion(
+          analysisResult.question || messageContent,
+          relevantProposal ? JSON.stringify(relevantProposal) : ''
+        );
+        
+        // Send response email
+        await sendAIResponseEmail(userEmail, aiResponse);
+        
+        console.log('AI response sent for question');
         break;
         
       case 'show_more':
         // Handle request to show more proposals
-        // Implementation would fetch more proposals and send a new digest
+        // Get more proposals and send a new digest
+        await sendMoreProposalsEmail(userEmail, user.wallet_address);
+        
+        console.log('More proposals email sent');
         break;
         
       default:
         console.log(`Unrecognized command in email: ${messageContent.substring(0, 100)}...`);
-        // Could send a help email explaining valid commands
+        
+        // Send a help email explaining valid commands
+        await sendAIResponseEmail(
+          userEmail,
+          "I couldn't understand your request. You can:\n\n" +
+          "- Vote on a proposal by replying with 'Vote YES/NO/ABSTAIN on Proposal ID'\n" +
+          "- Ask a question about a proposal\n" +
+          "- Request more proposals by replying with 'SHOW MORE PROPOSALS'"
+        );
         break;
     }
     
@@ -83,31 +114,4 @@ export const handleEmailReply = async (emailData: EmailReplyData): Promise<void>
     console.error('Error handling email reply:', error);
     throw error;
   }
-};
-
-// Helper function to determine the type of command in the email
-const determineCommandType = (messageContent: string): { 
-  type: 'vote' | 'question' | 'show_more' | 'unknown';
-  proposalId?: string;
-  choice?: string;
-} => {
-  // Check for vote command (e.g., "Vote YES on Proposal 123")
-  const voteRegex = /vote\s+(yes|no|abstain)\s+on\s+(?:proposal\s+)?(\w+)/i;
-  const voteMatch = messageContent.match(voteRegex);
-  
-  if (voteMatch) {
-    return {
-      type: 'vote',
-      choice: voteMatch[1].toUpperCase(),
-      proposalId: voteMatch[2]
-    };
-  }
-  
-  // Check for "show more proposals" command
-  if (/show\s+more\s+proposals/i.test(messageContent)) {
-    return { type: 'show_more' };
-  }
-  
-  // If no specific command is detected, treat it as a question
-  return { type: 'question' };
 }; 
