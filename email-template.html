@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your DAO Governance Digest</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9fafb;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .header {
+            background-color: #4f46e5;
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 24px;
+        }
+        .intro {
+            margin-bottom: 24px;
+            color: #4b5563;
+        }
+        .proposal-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .proposal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .proposal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+        }
+        .proposal-dao {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 4px 0;
+        }
+        .proposal-deadline {
+            font-size: 14px;
+            color: #ef4444;
+            margin: 0;
+            font-weight: 600;
+        }
+        .proposal-summary {
+            color: #4b5563;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .vote-instructions {
+            background-color: #f3f4f6;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+        .vote-instructions p {
+            margin: 0;
+            font-weight: 500;
+        }
+        .vote-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .vote-option {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .vote-for {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .vote-against {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .vote-abstain {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 24px 0;
+        }
+        .footer {
+            padding: 24px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            background-color: #f9fafb;
+        }
+        .footer p {
+            margin: 0 0 8px;
+        }
+        .footer a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+        .badge-active {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .chain-icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 6px;
+            border-radius: 50%;
+        }
+        .ai-recommendation {
+            background-color: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 12px;
+            margin-top: 12px;
+            margin-bottom: 16px;
+            color: #0369a1;
+            border-radius: 0 4px 4px 0;
+        }
+        .ai-recommendation strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .additional-options {
+            background-color: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 24px;
+        }
+        .additional-options h3 {
+            margin-top: 0;
+            color: #4b5563;
+            font-size: 16px;
+        }
+        .additional-options p {
+            margin-bottom: 8px;
+        }
+        .impact-message {
+            background-color: #f0fdf4;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border-left: 4px solid #10b981;
+        }
+        .impact-message h3 {
+            margin-top: 0;
+            color: #065f46;
+        }
+        .impact-message p {
+            color: #047857;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Your DAO Governance Digest</h1>
+            <p>Top 3 proposals selected for you - March 2, 2024</p>
+        </div>
+        
+        <div class="content">
+            <div class="intro">
+                <p>Hello <strong>nick.eth</strong>,</p>
+                <p>Based on your governance history and preferences, we've selected these key proposals for your attention. Your voice matters in shaping these decisions!</p>
+            </div>
+            
+            <div class="impact-message">
+                <h3>Your Governance Impact</h3>
+                <p>Your recent votes have helped pass 3 important proposals across Base and Optimism. Keep up the great work!</p>
+            </div>
+            
+            <!-- Proposal 1 -->
+            <div class="proposal-card">
+                <div class="proposal-header">
+                    <div>
+                        <span class="badge badge-active">High Priority</span>
+                        <img src="https://cryptologos.cc/logos/optimism-op-logo.png" class="chain-icon" alt="Optimism">
+                        <span>Optimism</span>
+                    </div>
+                    <p class="proposal-deadline">Ends in 2 days</p>
+                </div>
+                <h2 class="proposal-title">Protocol Fee Adjustment</h2>
+                <p class="proposal-summary">Proposal to adjust protocol fees from 0.3% to 0.25% to remain competitive in the market.</p>
+                <div class="ai-recommendation">
+                    <strong>AI Analysis:</strong>
+                    Based on your voting history, you've consistently supported fee reductions that maintain protocol sustainability. This proposal aligns with that pattern and current market conditions suggest the timing is appropriate.
+                </div>
+                <div class="vote-instructions">
+                    <p>To vote, reply with:</p>
+                    <div class="vote-options">
+                        <span class="vote-option vote-for">Vote YES OP-123</span>
+                        <span class="vote-option vote-against">Vote NO OP-123</span>
+                        <span class="vote-option vote-abstain">Vote ABSTAIN OP-123</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proposal 2 -->
+            <div class="proposal-card">
+                <div class="proposal-header">
+                    <div>
+                        <span class="badge badge-active">Active</span>
+                        <img src="https://cryptologos.cc/logos/base-logo.png" class="chain-icon" alt="Base">
+                        <span>Base</span>
+                    </div>
+                    <p class="proposal-deadline">Ends in 3 days</p>
+                </div>
+                <h2 class="proposal-title">Governance Upgrade</h2>
+                <p class="proposal-summary">Implement new voting mechanisms and improve proposal creation process.</p>
+                <div class="ai-recommendation">
+                    <strong>AI Analysis:</strong>
+                    You've previously supported similar governance improvements on Optimism. This upgrade includes comparable features and would streamline the voting process.
+                </div>
+                <div class="vote-instructions">
+                    <p>To vote, reply with:</p>
+                    <div class="vote-options">
+                        <span class="vote-option vote-for">Vote YES BASE-45</span>
+                        <span class="vote-option vote-against">Vote NO BASE-45</span>
+                        <span class="vote-option vote-abstain">Vote ABSTAIN BASE-45</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proposal 3 -->
+            <div class="proposal-card">
+                <div class="proposal-header">
+                    <div>
+                        <span class="badge badge-active">New</span>
+                        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="chain-icon" alt="Ethereum">
+                        <span>Ethereum</span>
+                    </div>
+                    <p class="proposal-deadline">Ends in 5 days</p>
+                </div>
+                <h2 class="proposal-title">Treasury Diversification</h2>
+                <p class="proposal-summary">Proposal to diversify 10% of the treasury into stablecoins for operational expenses.</p>
+                <div class="ai-recommendation">
+                    <strong>AI Analysis:</strong>
+                    Given recent market volatility and your past support for conservative treasury management, this proposal merits careful consideration. Similar strategies have proven effective in other DAOs you participate in.
+                </div>
+                <div class="vote-instructions">
+                    <p>To vote, reply with:</p>
+                    <div class="vote-options">
+                        <span class="vote-option vote-for">Vote YES ETH-789</span>
+                        <span class="vote-option vote-against">Vote NO ETH-789</span>
+                        <span class="vote-option vote-abstain">Vote ABSTAIN ETH-789</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="additional-options">
+                <h3>Need More Information?</h3>
+                <p>• Want to see more proposals? Reply with <strong>SHOW MORE</strong></p>
+                <p>• Have questions? Just reply naturally and our AI assistant will help explain any proposal in detail.</p>
+                <p>• View your complete governance dashboard at <a href="https://basedvoter.com/dashboard">basedvoter.com/dashboard</a></p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>You're receiving this because you're a governance participant in multiple DAOs.</p>
+            <p>Powered by AgentDAO - DAO tooling for governance fatigue and insights</p>
+            <p><a href="https://basedvoter.com/preferences">Update preferences</a> • <a href="https://basedvoter.com/unsubscribe">Unsubscribe</a></p>
+        </div>
+    </div>
+</body>
+</html> 

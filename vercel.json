@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "regions": ["iad1"],
+  "crons": [
+    {
+      "path": "/api/cron/send-digest",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/check-pending-votes",
+      "schedule": "0 12 * * *"
+    }
+  ],
+  "builds": [
+    {
+      "src": "dist/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "dist/index.js"
+    },
+    {
+      "src": "^/$",
+      "dest": "onboarding.html"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "dashboard.html"
+    },
+    {
+      "src": "/onboarding",
+      "dest": "onboarding.html"
+    },
+    {
+      "src": "/(.*)\\.js$",
+      "dest": "/$1.js"
+    },
+    {
+      "src": "/(.*)\\.css$",
+      "dest": "/$1.css"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+} 
